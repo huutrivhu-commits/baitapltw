@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>ATRÍ PET - THE BEST PET</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #0f0f0f; 
+            color: #ffffff;
+        }
+
+        /* --- HEADER & NAVIGATION --- */
+        .top-bar {
+            background-color: #1a1a1a;
+            padding: 8px 5%;
+            text-align: right;
+            font-size: 13px;
+            color: #da70d6; 
+            border-bottom: 1px solid #333;
+        }
+
+        .header-main {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 5%;
+            background-color: #1a1a1a;
+        }
+
+        .logo {
+            font-size: 30px;
+            font-weight: bold;
+            color: #ffb6c1; 
+            text-decoration: none;
+            text-shadow: 2px 2px 4px rgba(218, 112, 214, 0.5);
+        }
+
+        .search-container {
+            flex-grow: 1;
+            max-width: 600px;
+            margin: 0 30px;
+            display: flex;
+            background: #252525;
+            border: 1px solid #da70d6;
+            border-radius: 25px;
+            overflow: hidden;
+        }
+
+        .category-select {
+            background: #1a1a1a;
+            color: #ffb6c1;
+            border: none;
+            padding: 0 15px;
+            outline: none;
+            cursor: pointer;
+            font-weight: bold;
+            border-right: 1px solid #da70d6;
+        }
+
+        .search-container input {
+            flex-grow: 1;
+            padding: 12px 15px;
+            border: none;
+            background: transparent;
+            color: white;
+            outline: none;
+        }
+
+        .search-btn {
+            padding: 10px 25px;
+            background: #da70d6;
+            border: none;
+            color: white;
+            cursor: pointer;
+        }
+
+        .navbar {
+            background-color: #252525;
+            display: flex;
+            justify-content: center;
+            padding: 10px 0;
+            border-bottom: 2px solid #da70d6;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar a {
+            color: #ffb6c1;
+            text-decoration: none;
+            padding: 10px 20px;
+            font-weight: 600;
+            transition: 0.3s;
+            text-transform: uppercase;
+            cursor: pointer;
+        }
+
+        /* Màu khi mục được chọn */
+        .navbar a.active {
+            background: #da70d6;
+            color: white;
+            border-radius: 4px;
+        }
+
+        /* --- QUẢN LÝ HIỂN THỊ NỘI DUNG --- */
+        .tab-content {
+            display: none; /* Mặc định ẩn tất cả */
+            padding: 40px 5%;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- PHẦN SẢN PHẨM (MỤC THÚ CƯNG) --- */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr); /* 5 ảnh 1 hàng */
+            gap: 20px;
+        }
+
+        .product-card {
+            background-color: #1a1a1a;
+            border-radius: 10px;
+            overflow: hidden;
+            transition: 0.4s;
+            text-align: center;
+            border: 1px solid #333;
+        }
+
+        .product-card:hover { transform: translateY(-8px); border-color: #da70d6; }
+
+        .product-image-box {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1/1; /* Ảnh vuông */
+            overflow: hidden;
+        }
+
+        .product-image-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: 0.5s;
+        }
+
+        .product-buttons {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 85%;
+            opacity: 0; /* Hiện khi di chuột */
+            transition: 0.3s;
+        }
+
+        .product-card:hover .product-buttons { opacity: 1; }
+        .product-card:hover img { filter: brightness(40%); }
+
+        .product-buttons button {
+            padding: 8px;
+            border: none;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        .btn-info { background: #e0e0e0; }
+        .btn-cart { background: #da70d6; color: white; }
+
+        .product-name { color: #ffb6c1; font-size: 14px; margin: 10px 0; }
+        .product-price { color: #ff4500; font-weight: bold; }
+
+        /* Responsive */
+        @media (max-width: 1000px) { .product-grid { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 600px) { .product-grid { grid-template-columns: repeat(2, 1fr); } }
+		
+		/* Nền mờ phía sau */
+.modal {
+    display: none; 
+    position: fixed;
+    z-index: 2000;
+    left: 0; top: 0;
+    width: 100%; height: 100%;
+    background-color: rgba(0,0,0,0.9);
+}
+
+/* Khung nội dung chính */
+.modal-content {
+    background-color: #1a1a1a;
+    margin: 5% auto;
+    padding: 20px;
+    width: 70%;
+    max-width: 800px;
+    border-radius: 15px;
+    border: 1px solid #da70d6;
+    position: relative;
+}
+
+/* Nút đóng (X) */
+.close-modal {
+    position: absolute;
+    right: 20px; top: 10px;
+    color: #fff;
+    font-size: 35px;
+    cursor: pointer;
+}
+
+/* Chia đôi trái phải */
+.modal-body {
+    display: flex;
+    gap: 30px;
+    padding-top: 20px;
+}
+
+.modal-left { flex: 1; }
+.modal-left img {
+    width: 100%;
+    border-radius: 10px;
+    border: 1px solid #333;
+}
+
+.modal-right { flex: 1; text-align: left; }
+		.modal-description {
+    max-height: 250px;    /* Chiều cao tối đa bạn cho phép hiển thị */
+    overflow-y: auto;      /* Tự động hiện thanh cuộn dọc khi nội dung vượt quá 250px */
+    padding-right: 10px;   /* Khoảng cách để thanh cuộn không đè lên chữ */
+    margin-top: 15px;
+    text-align: left;      /* Căn lề trái cho dễ đọc */
+    border-top: 1px solid #333; /* Vạch ngăn cách nhẹ */
+    padding-top: 10px;
+}
+/*		chân trang*/
+		/* Thiết kế Footer */
+.footer-contact {
+    padding: 50px 5% 30px;
+    background-color: #0f0f0f;
+    text-align: center;
+}
+
+/* Thanh ngang phân cách */
+.footer-line {
+    height: 1px;
+    background: linear-gradient(to right, transparent, #da70d6, transparent);
+    margin-bottom: 30px;
+}
+
+.footer-content p {
+    color: #ffb6c1;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+/* Các nút liên kết mạng xã hội */
+.social-links {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.social-links a {
+    text-decoration: none;
+    padding: 10px 25px;
+    border-radius: 25px;
+    font-weight: bold;
+    font-size: 14px;
+    transition: 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid transparent;
+}
+
+/* Màu sắc riêng cho từng nút */
+.fb { color: #1877f2; border-color: #1877f2 !important; }
+.fb:hover { background: #1877f2; color: white; box-shadow: 0 0 15px #1877f2; }
+
+.zl { color: #0084ff; border-color: #0084ff !important; }
+.zl:hover { background: #0084ff; color: white; box-shadow: 0 0 15px #0084ff; }
+
+.tg { color: #26a5e4; border-color: #26a5e4 !important; }
+.tg:hover { background: #26a5e4; color: white; box-shadow: 0 0 15px #26a5e4; }
+    </style>
+</head>
+<body>
+
+    <div class="top-bar">
+        <i class="fas fa-phone-alt"></i> Hotline: (+84) 347 101 706
+    </div>
+
+    <div class="header-main">
+        <a href="#" class="logo">ATRÍ PET</a>
+        <div class="search-container">
+            <select id="category-filter" class="category-select" onchange="filterProducts()">
+    <option value="tat-ca">Tất cả</option>
+    <option value="cho">Chó</option>
+	<option value="tho">Thỏ</option>
+    <option value="meo">Mèo</option>
+    <option value="nhim">Nhím</option>
+    <option value="hamster">Hamster</option>
+</select>
+            <input type="text" placeholder="Tìm kiếm thú cưng...">
+            <button class="search-btn"><i class="fas fa-search"></i></button>
+        </div>
+       <div class="cart-wrapper" onclick="showTab('gio-hang')">
+    <i class="fas fa-shopping-cart"></i>
+    <span id="cart-count" class="cart-count">0</span>
+</div>
+    </div>
+
+    <div class="navbar">
+        <a onclick="showTab('thu-cung')" id="link-thu-cung" class="active">Thú cưng</a>
+        <a onclick="showTab('khuyen-mai')" id="link-khuyen-mai">Khuyến mãi</a>
+        <a onclick="showTab('cach-nuoi')" id="link-cach-nuoi">Cách nuôi</a>
+        <a onclick="showTab('phu-kien')" id="link-phu-kien">Phụ kiện</a>
+        <a onclick="showTab('dich-vu')" id="link-dich-vu">Dịch vụ khác</a>
+		<a onclick="showTab('gio-hang')" id="link-gio-hang">Giỏ hàng</a>
+    </div>
+<!--thú cưng-->
+    <div id="thu-cung" class="tab-content" style="display: block;">
+        <div class="product-grid">
+<!--pet 1-->
+            <div class="product-card"  data-category="nhim">
+  
+                <div class="product-image-box">
+                    <img src="https://lolipet.net/wp-content/uploads/2019/01/nhim-cam-300x225.jpg" alt="Pet">
+                    <div class="product-buttons">
+                        <button class="btn-info" onclick="openProduct('Nhím Kiểng Cam', '400,000 đ', 'https://lolipet.net/wp-content/uploads/2019/01/nhim-cam-300x225.jpg', 'một trong những thú cưng được yêu thích nhờ vẻ ngoài nổi bật với lớp gai màu cam nhạt, vàng mơ hoặc vàng cam rực rỡ kết hợp cùng đôi mắt đen nháy hoặc đỏ ruby đặc trưng. Về đặc điểm sinh học, chúng có kích thước nhỏ gọn, chiều dài trung bình từ 13 đến 20 cm và tuổi thọ dao động từ 3 đến 5 năm nếu được chăm sóc tốt. Đây là loài động vật hoạt động về đêm, có bản tính khá nhút nhát nhưng sẽ trở nên gần gũi, quấn chủ nếu được thuần hóa kiên trì. Chế độ ăn của chúng khá đa dạng, chủ yếu là côn trùng (sâu mồi, dế) bổ sung thêm hạt dành riêng cho mèo hoặc các loại rau củ quả ít đường. Khi nuôi nhím kiểng cam, người nuôi cần đặc biệt chú ý đến nhiệt độ môi trường, lý tưởng nhất là duy trì từ 24°C đến 30°C, bởi nhiệt độ quá thấp có thể khiến chúng rơi vào trạng thái ngủ đông giả gây nguy hiểm đến tính mạng.')">
+							Xem thông tin</button>
+                        <button class="btn-cart" onclick="addToCart('Nhím Kiểng Cam', '400,000 đ')">
+    					<i class="fas fa-cart-plus"></i> Thêm vào giỏ
+						</button>
+                    </div>
+                </div>
+                <div class="product-info">
+                    <div class="product-name">Nhím Kiểng Cam</div>
+                    <div class="product-price">400,000 đ</div>
+                </div>
+            </div>
+<!--pet 2-->
+			<div class="product-card"  data-category="nhim">
+                <div class="product-image-box">
+                    <img src="https://i.redd.it/tamx0nrp0igb1.jpg" alt="Pet">
+                    <div class="product-buttons">
+                        <button class="btn-info" onclick="openProduct('Nhím Tai Dài', '900,000 đ', 'https://i.redd.it/tamx0nrp0igb1.jpg', 'Nhím tai dài là loài nhím cảnh gây ấn tượng mạnh bởi đôi tai cực lớn giúp thính giác nhạy bén và tản nhiệt hiệu quả trong môi trường hoang mạc tự nhiên tại Trung Á và Trung Đông. So với dòng nhím bụng trắng thông thường, chúng có thân hình mảnh khảnh, đôi chân dài linh hoạt và trọng lượng nhẹ hơn, giúp chúng trở thành những vận động viên chạy bộ thực thụ với nhu cầu vận động rất cao. Về tính cách, nhím tai dài thường hiếu động, săn mồi giỏi và có phần nhát hơn nên đòi hỏi sự kiên trì trong việc thuần hóa, đồng thời cần một chế độ ăn giàu đạm từ côn trùng cùng môi trường sống khô ráo, ấm áp. Khi được nuôi làm thú cưng, chúng cần một không gian rộng rãi và vòng chạy chuyên dụng để thỏa mãn bản năng khám phá và giải tỏa năng lượng vào ban đêm.')">
+							Xem thông tin</button>
+                        <button class="btn-cart" onclick="addToCart('Nhím Tai Dài', '900,000 đ')">
+    					<i class="fas fa-cart-plus"></i> Thêm vào giỏ
+						</button>
+                    </div>
+                </div>
+                <div class="product-info">
+                    <div class="product-name">Nhím Tai Dài</div>
+                    <div class="product-price">900,000 đ</div>
+                </div>
+            </div>
+<!--pet 3-->
+			<div class="product-card"  data-category="nhim">
+                <div class="product-image-box">
+                    <img src="https://lichsuvietnam.org/wp-content/uploads/2025/11/hedgeh111.jpg" alt="Pet">
+                    <div class="product-buttons">
+                         <button class="btn-info" onclick="openProduct('Nhím Trắng', '200,000 đ', 'https://lichsuvietnam.org/wp-content/uploads/2025/11/hedgeh111.jpg', 'loài nhím cảnh phổ biến nhất thế giới nhờ kích thước nhỏ nhắn cùng vẻ ngoài cực kỳ đáng yêu với phần bụng phủ lông trắng muốt đối lập với lớp gai cứng trên lưng. Điểm hấp dẫn nhất của loài này chính là sự đa dạng về màu sắc, từ màu muối tiêu truyền thống, trắng tinh khôi cho đến các tông màu ấm như cam và chocolate. Về tính cách, chúng khá hiền lành và có thể trở nên rất quấn chủ nếu được tương tác thường xuyên, thường biểu hiện sự tin tưởng bằng cách hạ gai và để lộ phần bụng mềm mại khi được bế trên tay. Đây là loài động vật ăn côn trùng, hoạt động chủ yếu về đêm, vì vậy chúng rất thích hợp với những người có nhịp sống hiện đại, thường xuyên bận rộn vào ban ngày nhưng muốn có một người bạn nhỏ để bầu bạn vào buổi tối.')">
+							Xem thông tin</button>
+                       <button class="btn-cart" onclick="addToCart('Nhím Trắng', '200,000 đ')">
+    					<i class="fas fa-cart-plus"></i> Thêm vào giỏ
+						</button>
+                    </div>
+                </div>
+                <div class="product-info">
+                    <div class="product-name">Nhím Trắng</div>
+                    <div class="product-price">200,000 đ</div>
+                </div>
+            </div>
+<!--pet 4-->
+			<div class="product-card" data-category="tho">
+                <div class="product-image-box">
+                    <img src="https://petdanphuong.com.vn/wp-content/uploads/2021/12/tho-ha-lan-lun-mau-vang-nhat-avatar.jpg" alt="Pet">
+                    <div class="product-buttons">
+                        <button class="btn-info" onclick="openProduct('Thỏ Hà Lan Lùn', '300,000 đ', 'https://petdanphuong.com.vn/wp-content/uploads/2021/12/tho-ha-lan-lun-mau-vang-nhat-avatar.jpg', 'giống thỏ nhỏ nhất thế giới và luôn nằm trong danh sách những thú cưng được yêu thích nhất nhờ vẻ ngoài không bao giờ lớn. Với trọng lượng lý tưởng chỉ từ 0.5kg đến 1.1kg, chúng sở hữu thân hình tròn trịa, đôi tai ngắn dựng đứng đặc trưng và khuôn mặt bầu bĩnh với đôi mắt to tròn toát lên vẻ tinh anh. Dù có kích thước tí hon, loài thỏ này lại cực kỳ năng động, thông minh và mang trong mình cá tính mạnh mẽ, thích khám phá mọi ngóc ngách trong không gian sống. Nhờ sự nhỏ nhắn này, thỏ Hà Lan Lùn rất phù hợp với những người sống trong căn hộ hoặc không gian nhỏ, mang lại niềm vui nhẹ nhàng mỗi khi chúng chạy nhảy và tương tác cùng chủ nhân vào cuối ngày.')">
+							Xem thông tin</button>
+                        <button class="btn-cart" onclick="addToCart('Thỏ Hà Lan Lùn', '300,000 đ')">
+    					<i class="fas fa-cart-plus"></i> Thêm vào giỏ
+						</button>
+                    </div>
+                </div>
+                <div class="product-info">
+                    <div class="product-name">Thỏ Hà Lan Lùn</div>
+                    <div class="product-price">300,000 đ</div>
+                </div>
+            </div>
+<!--pet 5-->
+			<div class="product-card" data-category="tho">
+                <div class="product-image-box">
+                    <img src="https://lolipet.net/wp-content/uploads/2021/01/245637-699x450-lionhead-rabbit.jpg" alt="Pet">
+                    <div class="product-buttons">
+                        <button class="btn-info" onclick="openProduct('Thỏ lionhead', '800,000 đ', 'https://lolipet.net/wp-content/uploads/2021/01/245637-699x450-lionhead-rabbit.jpg', 'một trong những giống thỏ kiểng có ngoại hình độc đáo và ấn tượng nhất nhờ chiếc bờm lông dài, dày bao quanh đầu và cổ, gợi liên tưởng đến hình ảnh dũng mãnh của một chú sư tử thu nhỏ. Với kích thước khiêm tốn chỉ nặng khoảng 1.3kg đến 1.7kg, loài thỏ này sở hữu thân hình nhỏ gọn nhưng vô cùng săn chắc, đi kèm với đôi tai dựng đứng cân đối. Điểm đặc biệt của Lionhead không chỉ nằm ở bộ lông xù duyên dáng mà còn ở tính cách thông minh, thân thiện và rất thích tương tác với con người, khiến chúng trở thành người bạn đồng hành lý tưởng trong gia đình. Dù bộ lông bờm cần được chải chuốt thường xuyên để giữ độ mượt mà, nhưng sự năng động và tình cảm mà một chú thỏ Lionhead mang lại chắc chắn sẽ làm bừng sáng không gian sống của bạn.')">
+							Xem thông tin</button>
+                       <button class="btn-cart" onclick="addToCart('Thỏ Lionhead', '800,000 đ')">
+    					<i class="fas fa-cart-plus"></i> Thêm vào giỏ
+						</button>
+                    </div>
+                </div>
+                <div class="product-info">
+                    <div class="product-name">Thỏ Lionhead</div>
+                    <div class="product-price">800,000 đ</div>
+                </div>
+            </div>
+<!--pet 6-->
+			<div class="product-card" data-category="hamster">
+                <div class="product-image-box">
+                    <img src="https://cdn.tgdd.vn/Files/2021/04/12/1342877/cac-giong-hamster-pho-bien-duoc-yeu-thich-tai-viet-nam-202104122053185731.jpg" alt="Pet">
+                    <div class="product-buttons">
+                       <button class="btn-info" onclick="openProduct('Hamster lùn', '200,000 đ', 'https://cdn.tgdd.vn/Files/2021/04/12/1342877/cac-giong-hamster-pho-bien-duoc-yeu-thich-tai-viet-nam-202104122053185731.jpg', 'loài hamster có kích thước tí hon, thường chỉ dài từ 5cm đến 10cm, mang lại vẻ ngoài tròn trịa và cực kỳ đáng yêu như những viên bông di động. Nhóm này bao gồm các dòng phổ biến như Winter White, Campbell và Roborovski, mỗi loài đều có những đặc điểm màu sắc và tính cách riêng biệt, từ sự hiền lành, dễ gần của Winter White đến tốc độ chạy cực nhanh và vẻ nhút nhát của dòng Robo. Với bản tính năng động và thích khám phá, hamster lùn rất ưa chuộng các hoạt động chạy vòng quay (wheel) hay đào bới trong lớp lót chuồng dày dặn vào ban đêm. Nhờ kích thước nhỏ gọn và chi phí chăm sóc không quá cao, chúng là lựa chọn tuyệt vời cho những người bận rộn hoặc sống trong không gian nhỏ, mang lại niềm vui thư giãn khi quan sát chúng hì hục dự trữ thức ăn đầy hai túi má đặc trưng.')">
+							Xem thông tin</button>
+                        <button class="btn-cart" onclick="addToCart('Hamster Lùn', '200,000 đ')">
+    					<i class="fas fa-cart-plus"></i> Thêm vào giỏ
+						</button>
+                    </div>
+                </div>
+                <div class="product-info">
+                    <div class="product-name">Hamster lùn</div>
+                    <div class="product-price">200,000 đ</div>
+                </div>
+            </div>
+<!--pet 7-->
+			<div class="product-card" data-category="hamster">
+                <div class="product-image-box">
+                    <img src="https://pikapet.net/wp-content/uploads/2019/11/12329752_900947643343410_684832884_n.jpg" alt="Pet">
+                    <div class="product-buttons">
+                         <button class="btn-info" onclick="openProduct('Hamster bear', '100,000 đ', 'https://pikapet.net/wp-content/uploads/2019/11/12329752_900947643343410_684832884_n.jpg', 'là người khổng lồ hiền lành trong thế giới hamster với kích thước lớn nhất trong các dòng thú cưng phổ biến, thường đạt chiều dài từ 15cm đến 20cm khi trưởng thành. Đúng như tên gọi, chúng sở hữu khuôn mặt bầu bĩnh và thân hình tròn trịa trông giống như một chú gấu con thu nhỏ, đi kèm với bộ lông đa dạng từ lông ngắn mượt mà đến lông xù dài lãng tử. Khác với các dòng hamster lùn thường nhanh nhảu, Hamster Bear có tính cách điềm tĩnh, chậm rãi và rất dễ thuần hóa, khiến chúng trở thành lựa chọn số một cho những người mới bắt đầu hoặc các bạn nhỏ muốn có một người bạn nhỏ để bế trên tay. Tuy nhiên, do bản năng lãnh thổ cực kỳ cao, loài này bắt buộc phải được nuôi đơn độc trong một chiếc chuồng rộng rãi để đảm bảo sức khỏe và tránh các cuộc xung đột không đáng có.')">
+							Xem thông tin</button>
+                        <button class="btn-cart" onclick="addToCart('Hamster bear', '100,000 đ')">
+    					<i class="fas fa-cart-plus"></i> Thêm vào giỏ
+						</button>
+                    </div>
+                </div>
+                <div class="product-info">
+                    <div class="product-name">Hamster bear</div>
+                    <div class="product-price">100,000 đ</div>
+                </div>
+            </div>
+<!--pet 8-->
+			<div class="product-card" data-category="cho">
+                <div class="product-image-box">
+                    <img src="https://azpet.com.vn/wp-content/uploads/2022/06/C2356-C12986-4.jpg" alt="Pet">
+                    <div class="product-buttons">
+                         <button class="btn-info" onclick="openProduct('Chó Husky', '1,000,000 đ', 'https://azpet.com.vn/wp-content/uploads/2022/06/C2356-C12986-4.jpg', 'giống chó kéo xe có nguồn gốc từ vùng Đông Bắc Á khắc nghiệt, gây ấn tượng mạnh mẽ với vẻ ngoài dũng mãnh giống như một chú sói hoang dã nhưng lại mang tính cách cực kỳ thân thiện và đôi khi có phần nghịch ngợm đến mức hài hước. Với thân hình săn chắc, đôi tai dựng đứng và đặc biệt là đôi mắt hình hạnh nhân có thể mang nhiều màu sắc độc đáo như xanh da trời, nâu hoặc thậm chí là hai màu mắt khác nhau, chúng luôn thu hút mọi ánh nhìn ở bất cứ đâu. Dù sở hữu bộ lông kép dày dặn giúp chịu lạnh tuyệt vời và khả năng vận động bền bỉ, Husky lại nổi tiếng với biệt danh chó ngáo bởi những biểu cảm khuôn mặt phong phú và thói quen hú thay vì sủa để giao tiếp với chủ nhân. Đây là người bạn đồng hành lý tưởng cho những chủ nhân năng động, yêu thích các hoạt động ngoài trời, nhưng cũng đòi hỏi sự kiên trì trong việc huấn luyện và một môi trường sống mát mẻ để các bé luôn cảm thấy thoải mái.')">
+							Xem thông tin</button>
+                        <button class="btn-cart" onclick="addToCart('Chó Husky', '1,000,000 đ')">
+    					<i class="fas fa-cart-plus"></i> Thêm vào giỏ
+						</button>
+                    </div>
+                </div>
+                <div class="product-info">
+                    <div class="product-name">Chó Husky</div>
+                    <div class="product-price">1,000,000 đ</div>
+                </div>
+            </div>
+<!--pet 9-->
+			<div class="product-card" data-category="cho">
+                <div class="product-image-box">
+                    <img src="https://azpet.com.vn/wp-content/uploads/2025/12/IMG_2967.jpeg" alt="Pet">
+                    <div class="product-buttons">
+                         <button class="btn-info" onclick="openProduct('Chó corgi', '1,400,000 đ', 'https://azpet.com.vn/wp-content/uploads/2025/12/IMG_2967.jpeg', 'là giống chó chăn gia súc nhỏ nhắn nhưng vô cùng nổi tiếng nhờ thân hình ngắn với đôi chân lùn đặc trưng và bờ mông tròn trịa cực kỳ đáng yêu. Sở hữu khuôn mặt thông minh, đôi tai lớn dựng đứng cùng nụ cười rạng rỡ, chúng luôn mang lại năng lượng tích cực và sự vui vẻ cho không gian sống của mọi gia đình. Dù có ngoại hình nhỏ gọn phù hợp với cả căn hộ chung cư, Corgi lại mang trong mình dòng máu của những vận động viên thực thụ, rất năng động, thích chạy nhảy và cực kỳ nhạy bén trong việc học hỏi các câu lệnh mới. Với tính cách trung thành, đôi khi hơi bướng bỉnh nhưng lại rất tình cảm, một chú Corgi không chỉ là một thú cưng mà còn là một người bạn đồng hành lý tưởng, luôn sẵn sàng quấn quýt và mang lại những tràng cười sảng khoái cho chủ nhân mỗi ngày.')">
+							Xem thông tin</button>
+                       <button class="btn-cart" onclick="addToCart('Chó Corgi', '1,400,000 đ')">
+    					<i class="fas fa-cart-plus"></i> Thêm vào giỏ
+						</button>
+                    </div>
+                </div>
+                <div class="product-info">
+                    <div class="product-name">Chó corgi</div>
+                    <div class="product-price">1,400,000 đ</div>
+                </div>
+            </div>
+<!--pet 10-->
+			<div class="product-card" data-category="cho">
+                <div class="product-image-box">
+                    <img src="https://pethouse.com.vn/wp-content/uploads/2023/06/cho-chihuahua.jpg" alt="Pet">
+                    <div class="product-buttons">
+                          <button class="btn-info" onclick="openProduct('Chó chihuahua', '1,400,000 đ', 'https://pethouse.com.vn/wp-content/uploads/2023/06/cho-chihuahua.jpg', 'giống chó nhỏ nhất thế giới với nguồn gốc từ Mexico, nổi tiếng bởi thân hình tí hon nhưng sở hữu một cá tính vô cùng mạnh mẽ và sự tự tin đáng kinh ngạc. Với đôi tai lớn dựng đứng đặc trưng và đôi mắt tròn xoe đầy biểu cảm, chúng có thể mang vẻ ngoài của một chú chó lông ngắn mượt mà hoặc lông dài duyên dáng với bảng màu sắc cực kỳ đa dạng. Dù có kích thước khiêm tốn, Chihuahua lại cực kỳ trung thành, gan dạ và thường có xu hướng gắn kết mật thiết với một chủ nhân duy nhất, sẵn sàng bảo vệ lãnh thổ của mình bằng tiếng sủa lanh lảnh đầy uy lực. Đây là lựa chọn tuyệt vời cho những người sống trong căn hộ hoặc không gian nhỏ, mang lại sự ấm áp và niềm vui bất tận nhờ bản tính tình cảm, thích được ôm ấp và luôn muốn trở thành tâm điểm chú ý của cả gia đình.')">
+							Xem thông tin</button>
+                        <button class="btn-cart" onclick="addToCart('Chó chihuahua', '1,400,000 đ')">
+    					<i class="fas fa-cart-plus"></i> Thêm vào giỏ
+						</button>
+                    </div>
+                </div>
+                <div class="product-info">
+                    <div class="product-name">Chó chihuahua</div>
+                    <div class="product-price">1,400,000 đ</div>
+                </div>
+            </div>
+<!--pet 11-->
+			<div class="product-card" data-category="cho">
+                <div class="product-image-box">
+                    <img src="https://shibainu.vn/wp-content/uploads/2025/03/cho-shiba-mau-vang.jpg" alt="Pet">
+                    <div class="product-buttons">
+                         <button class="btn-info" onclick="openProduct('Chó shiba', '1,400,000 đ', 'https://shibainu.vn/wp-content/uploads/2025/03/cho-shiba-mau-vang.jpg', 'Shiba Inu là giống chó nguyên thủy nhỏ nhất trong sáu giống chó đặc hữu của Nhật Bản, nổi tiếng toàn thế giới với khuôn mặt biểu cảm biết cười và tính cách độc lập, tự chủ như một chú mèo. Sở hữu thân hình săn chắc, gọn gàng cùng bộ lông kép dày dặn với các màu đặc trưng như đỏ (red), đen và xám (black & tan) hay vừng (sesame), Shiba mang vẻ đẹp thanh thoát nhưng vô cùng dũng mãnh. Điểm quyến rũ nhất của loài này chính là sự trung thành tuyệt đối nhưng không quá quấn quýt, chúng thường quan sát mọi thứ với đôi mắt hình tam giác sắc sảo và chỉ thể hiện tình cảm một cách tinh tế. Dù có đôi chút bướng bỉnh và đòi hỏi sự kiên trì trong việc huấn luyện, Shiba Inu vẫn là người bạn đồng hành lý tưởng cho những chủ nhân yêu thích sự sạch sẽ, tính cách điềm tĩnh và vẻ ngoài đậm chất Á Đông của một quốc bảo đến từ xứ sở hoa anh đào.')">
+							Xem thông tin</button>
+                        <button class="btn-cart" onclick="addToCart('Chó shiba', '1,400,000 đ')">
+    					<i class="fas fa-cart-plus"></i> Thêm vào giỏ
+						</button>
+                    </div>
+                </div>
+                <div class="product-info">
+                    <div class="product-name">Chó shiba</div>
+                    <div class="product-price">1,400,000 đ</div>
+                </div>
+            </div>
+<!--pet 12-->
+			<div class="product-card" data-category="meo">
+                <div class="product-image-box">
+                    <img src="https://file.hstatic.net/200000159621/article/z3713508543131_7cba8245b8e6f81f6977d9ec51f280b4_e6fdf79179eb436e9541f5528fe82ca8_grande.jpg" alt="Pet">
+                    <div class="product-buttons">
+                        <button class="btn-info" onclick="openProduct('Mèo anh lông ngắn', '5,000,000 đ', 'https://file.hstatic.net/200000159621/article/z3713508543131_7cba8245b8e6f81f6977d9ec51f280b4_e6fdf79179eb436e9541f5528fe82ca8_grande.jpg', 'Mèo Anh lông ngắn luôn gây ấn tượng bởi thân hình mũm mĩm, khung xương to và cặp má bánh bao cực kỳ đáng yêu. Điểm cuốn hút nhất của chúng chính là bộ lông ngắn nhưng rất dày và êm ái, tạo cảm giác như đang chạm vào một chú gấu bông bằng nhung. Đây là người bạn đồng hành lý tưởng cho những người bận rộn, bởi chúng có tính cách độc lập, ít khi làm nũng quá mức và thường thích tự tìm niềm vui cho mình trong khi chờ chủ nhân đi làm về.')">
+							Xem thông tin</button>
+                        <button class="btn-cart" onclick="addToCart('Mèo anh lông ngắn', '5,000,000 đ')">
+    					<i class="fas fa-cart-plus"></i> Thêm vào giỏ
+						</button>
+                    </div>
+                </div>
+                <div class="product-info">
+                    <div class="product-name">Mèo anh lông ngắn</div>
+                    <div class="product-price">5,000,000 đ</div>
+                </div>
+            </div>
+<!--pet 13-->		
+			<div class="product-card" data-category="meo">
+                <div class="product-image-box">
+                    <img src="https://pethouse.com.vn/wp-content/uploads/2025/12/meo-ragdoll-dep-ma-RD4193.jpg" alt="Pet">
+                    <div class="product-buttons">
+                        <button class="btn-info" onclick="openProduct('Mèo ragdol', '10,400,000 đ', 'https://pethouse.com.vn/wp-content/uploads/2025/12/meo-ragdoll-dep-ma-RD4193.jpg', 'Ragdoll sở hữu một vẻ đẹp dịu dàng với đôi mắt xanh biếc như nước hồ và bộ lông dài mượt mà mang những tông màu sáng thanh lịch. Giống mèo này nổi tiếng với sự tận tụy và quấn quýt chủ nhân không rời; chúng sẵn sàng nằm lười trong lòng bạn hàng giờ liền và thả lỏng cơ thể hoàn toàn khi được bế. Nếu bạn đang tìm kiếm một người bạn tình cảm, thích được vỗ về và luôn chào đón bạn ở cửa, Ragdoll chính là sự lựa chọn hoàn hảo.')">
+							Xem thông tin</button>
+                        <button class="btn-cart" onclick="addToCart('Mèo ragdol', '10,400,000 đ')">
+    					<i class="fas fa-cart-plus"></i> Thêm vào giỏ
+						</button>
+                    </div>
+                </div>
+                <div class="product-info">
+                    <div class="product-name">Mèo ragdoll</div>
+                    <div class="product-price">10,400,000 đ</div>
+                </div>
+            </div>
+<!--pet 14-->
+			<div class="product-card" data-category="meo">
+                <div class="product-image-box">
+                    <img src="https://azpet.com.vn/wp-content/uploads/2021/07/meo-ba-tu-2.jpg" alt="Pet">
+                    <div class="product-buttons">
+                        <button class="btn-info" onclick="openProduct('Mèo ba tư', '15,400,000 đ', 'https://azpet.com.vn/wp-content/uploads/2021/07/meo-ba-tu-2.jpg', 'Với khuôn mặt tịt đặc trưng và ánh mắt to tròn, mèo Ba Tư toát lên vẻ quyền quý mà khó giống mèo nào sánh kịp. Chúng sở hữu lớp lông kép dài và dày, đòi hỏi sự chăm chút tỉ mỉ từ người nuôi để luôn giữ được vẻ mượt mà. Về tính cách, mèo Ba Tư cực kỳ lười vận động và yêu thích sự tĩnh lặng; chúng thích được nằm thư giãn trên những chiếc đệm êm hay những góc nhỏ yên tĩnh trong nhà hơn là chạy nhảy hay leo trèo nghịch ngợm.')">
+							Xem thông tin</button>
+                        <button class="btn-cart" onclick="addToCart('Mèo ba tư', '15,400,000 đ')">
+    					<i class="fas fa-cart-plus"></i> Thêm vào giỏ
+						</button>
+                    </div>
+                </div>
+                <div class="product-info">
+                    <div class="product-name">Mèo ba tư</div>
+                    <div class="product-price">15,400,000 đ</div>
+                </div>
+            </div>
+<!--pet 15 -->
+			<div class="product-card" data-category="meo">
+                <div class="product-image-box">
+                    <img src="https://file.hstatic.net/200000945871/file/meo-xiem-lai_6e1b65ec7cae42b58fd95b243af8ae81.jpg" alt="Pet">
+                    <div class="product-buttons">
+                        <button class="btn-info" onclick="openProduct('Mèo xiêm', '15,400,000 đ', 'https://file.hstatic.net/200000945871/file/meo-xiem-lai_6e1b65ec7cae42b58fd95b243af8ae81.jpg', 'Mèo Xiêm sở hữu vẻ ngoài thanh mảnh, thể thao với những mảng lông tối màu tương phản rõ rệt ở các đầu cực như tai, mặt và chân. Khác với vẻ tĩnh lặng của các giống mèo trên, mèo Xiêm rất thông minh, hướng ngoại và cực kỳ thích nói chuyện. Chúng thường xuyên giao tiếp với chủ bằng những tiếng kêu có sắc thái riêng để bày tỏ nhu cầu hoặc cảm xúc. Đây là giống mèo dành cho những ai thích một vật nuôi năng động, có thể cùng chơi đùa và tương tác liên tục mỗi ngày.')">
+							Xem thông tin</button>
+                        <button class="btn-cart" onclick="addToCart('Mèo xiêm', '15,400,000 đ')">
+    					<i class="fas fa-cart-plus"></i> Thêm vào giỏ
+						</button>
+                    </div>
+                </div>
+                <div class="product-info">
+                    <div class="product-name">Mèo xiêm</div>
+                    <div class="product-price">15,400,000 đ</div>
+                </div>
+            </div>
+			
+            </div>
+	    </div>
+<!--khuyến mãi-->
+    <div id="khuyen-mai" class="tab-content">
+        <h2 style="color: #da70d6;text-align: center;">Ưu Đãi Đặc Biệt</h2>
+		<p>Khách hàng chụp ảnh thú cưng tại cửa hàng và đăng lên mạng xã hội kèm hashtag #ATRI PET sẽ được tặng ngay một món quà cho thú cưng.</p>
+        <p>Giảm giá 10% cho tất cả khách hàng mua từ 2 bé trở lên!</p>
+		<p>Gói ưu đãi dành riêng cho những người mới bắt đầu nuôi thú cưng. Combo bao gồm các vật dụng cơ bản như bát ăn, khay vệ sinh, sữa tắm và thức ăn hạt với mức giá tiết kiệm hơn 15-20% so với mua lẻ.</p>
+		<p>Khách hàng mang những vật dụng cũ (như chuồng, đệm, bát ăn còn sử dụng được) đến cửa hàng để đổi lấy voucher giảm giá khi mua sản phẩm mới cùng loại. Đồ cũ có thể được cửa hàng làm sạch và quyên góp cho các trạm cứu hộ động vật.</p>
+		<p>Giảm giá 20% phí tắm rửa hoặc tỉa lông cho thú cưng vào thứ hai.</p>
+		<p>Áp dụng ưu đãi "Đi 2 tính tiền 1" khi khách hàng dẫn theo bạn bè cùng đưa thú cưng đến làm đẹp.</p>
+		<p>Với mỗi hóa đơn trên 500k khách hàng sẽ nhận được 1 dấu tích điểm. Khi tích đủ 5 dấu, khách sẽ được tặng một túi hạt nhỏ, một món đồ chơi hoặc miễn phí một lần cắt móng/vệ sinh tai.</p>
+		<p>Giảm giá đặc biệt 30% cho khách hàng mua sắm phụ kiện hoặc thức ăn vào đúng ngày sinh nhật của thú cưng (dựa trên thông tin đăng ký lúc nhận thú cưng).</p>
+		
+    </div>
+<!--cách nuôi-->
+    <div id="cach-nuoi" class="tab-content">
+        <h2 style="color: #da70d6;text-align: center;">Hướng Dẫn Chăm Sóc</h2>
+		<h3>Giống chó</h3>
+        <p>Nuôi chó thực tế là một bài toán về thời gian và sự kết nối xã hội. Bạn cần thiết lập khung giờ ăn cố định với tỉ lệ đạm từ thịt chiếm khoảng 40-50%, kết hợp rau củ băm nhỏ để hỗ trợ tiêu hóa, đồng thời tuyệt đối tránh các thực phẩm nguy hiểm như socola hay hành tây. Quan trọng nhất là việc quản lý năng lượng; nếu không được dắt đi dạo ít nhất 30-60 phút mỗi ngày để giải tỏa, chúng dễ rơi vào trạng thái lo âu và tự "giải trí" bằng cách cắn phá đồ đạc. Việc huấn luyện các lệnh cơ bản ngay từ nhỏ không chỉ giúp kiểm soát hành vi mà còn thắt chặt sợi dây tình cảm, giúp "người bạn bốn chân" luôn khỏe mạnh và điềm tĩnh trong môi trường gia đình.</p>
+		<h3>Giống mèo</h3>
+		<p>Mèo là loài ưa sạch sẽ nhưng lại có thói quen lười uống nước, dẫn đến nguy cơ cao mắc các bệnh về sỏi thận. Thực tế, bạn nên ưu tiên cho mèo ăn xen kẽ Pate (thức ăn ướt) và hạt khô để cấp nước tự nhiên, đồng thời đầu tư máy lọc nước tuần hoàn để kích thích chúng uống nhiều hơn. Về vệ sinh, khay cát cần được xúc dọn ít nhất 2 lần/ngày vì mèo có thể bỏ đi vệ sinh chỗ khác nếu cảm thấy không sạch. Đối với các giống lông dài như Ragdoll hay Ba Tư, việc chải lông hàng ngày là bắt buộc để loại bỏ lông chết, tránh việc mèo liếm lông quá nhiều dẫn đến tắc ruột do búi lông, kết hợp với các trụ cào móng để thỏa mãn bản năng tự nhiên của chúng.</p>
+		<h3>Giống thỏ</h3>
+		<p>Khác với lầm tưởng thông thường, thỏ không thể sống chỉ bằng cà rốt; thực tế, cỏ khô (như Timothy) phải chiếm tới 80% khẩu phần ăn hằng ngày để giúp mài bộ răng mọc dài liên tục và hỗ trợ nhu động ruột. Nước uống cho thỏ phải là nước sạch đóng chai, tuyệt đối không dùng nước máy trực tiếp và hạn chế trái cây để tránh gây đầy hơi, tiêu chảy. Thỏ cũng là loài động vật cực kỳ nhạy cảm, dễ bị hoảng sợ bởi tiếng động mạnh và có khung xương sống khá giòn, nên khi bế bạn luôn phải đỡ mông chúng để tránh chấn thương. Ngoài ra, hãy lưu ý bao bọc các dây điện trong nhà thật kỹ vì thỏ có bản năng gặm nhấm mọi thứ trong tầm với của mình.</p>
+		<h3>Chuột Hamster</h3>
+		<p>Hamster là những "vận động viên" thầm lặng về đêm, đòi hỏi một chiếc lồng đủ rộng với vòng chạy (wheel) phù hợp để chúng vận động hàng dặm mỗi đêm, ngăn ngừa bệnh liệt chân. Thực tế, tuyệt đối không nên nuôi chung hai con Hamster (đặc biệt là dòng Bear) trong cùng một lồng vì chúng có tính lãnh thổ cực cao và sẽ tấn công nhau đến chết. Về dinh dưỡng, hãy cung cấp hỗn hợp các loại hạt, ngũ cốc và thường xuyên kiểm tra các góc chuồng để dọn bỏ thức ăn thừa bị hỏng do thói quen tích trữ trong túi má của chúng. Lưu ý đặc biệt là không bao giờ tắm cho Hamster bằng nước; thay vào đó, hãy sử dụng cát tắm chuyên dụng để chúng tự làm sạch bộ lông một cách tự nhiên và an toàn.</p>
+		<h3>Giống nhím</h3>
+		<p>Nhím cảnh là loài hoạt động về đêm và cực kỳ nhạy cảm với nhiệt độ môi trường, vì vậy bạn cần đảm bảo khu vực nuôi luôn duy trì ổn định ở mức 25-29°C để tránh việc chúng rơi vào trạng thái ngủ đông giả rất nguy hiểm. Chế độ ăn của nhím chủ yếu là hạt chất lượng cao, bổ sung thêm sâu khô (mealworms) hoặc dế vài lần mỗi tuần, nhưng cần kiểm soát lượng ăn chặt chẽ vì nhím rất dễ bị béo phì. Vì có thị lực kém nhưng khứu giác nhạy bén, bạn nên để nhím làm quen với mùi hương của mình một cách từ từ trước khi bế. Một chiếc vòng chạy (wheel) kích thước lớn, bề mặt phẳng là phụ kiện bắt buộc trong chuồng để nhím có thể vận động thoải mái mà không bị kẹt chân hay xù gai tự vệ.</p>
+    </div>
+<!--phụ kiện-->
+    <div id="phu-kien" class="tab-content">
+    <h3 style="color: #da70d6; text-align: center; margin-bottom: 30px;">PHỤ KIỆN CHO THÚ CƯNG</h3>
+
+    <div class="product-grid">
+       <!--    pk 1--> 
+		<div class="product-card" >
+            <div class="product-image-box">
+                <img src="https://www.robins.vn/wp-content/uploads/2026/01/thuc-an-hat-smartheart-danh-cho-cho-con-vi-bo-va-sua-.jpg.jpg" alt="" >
+                <div class="product-buttons">
+                    <button class="btn-info" onclick="openProduct('Hạt khô', '85,000 đ', 'https://www.robins.vn/wp-content/uploads/2026/01/thuc-an-hat-smartheart-danh-cho-cho-con-vi-bo-va-sua-.jpg.jpg', 'dành cho chó')">
+                        Xem thông tin
+                    </button>
+                   <button class="btn-cart" onclick="addToCart('Hạt khô', '85,000 đ')">
+    					<i class="fas fa-cart-plus"></i> Thêm vào giỏ
+						</button>
+                </div>
+            </div>
+            <div class="product-info">
+                <div class="product-name">Hạt khô</div>
+                <div class="product-price">85,000 đ</div>
+            </div>
+        </div>
+<!--pk 2-->
+		<div class="product-card" data-category="phu-kien">
+            <div class="product-image-box">
+                <img src="https://npet.com.vn/wp-content/uploads/2023/09/Thuc-an-cho-meo-royal-canin-kitten.jpg" alt = "">
+                <div class="product-buttons">
+                    <button class="btn-info" onclick="openProduct('Hạt khô', '55,000 đ', 'https://npet.com.vn/wp-content/uploads/2023/09/Thuc-an-cho-meo-royal-canin-kitten.jpg', 'dành cho mèo.')">
+                        Xem thông tin
+                    </button>
+                    <button class="btn-cart" onclick="addToCart('Hạt khô', '55,000 đ')">
+    					<i class="fas fa-cart-plus"></i> Thêm vào giỏ
+						</button>
+                </div>
+            </div>
+            <div class="product-info">
+                <div class="product-name">Hạt khô</div>
+                <div class="product-price">55,000 đ</div>
+            </div>
+        </div>
+<!--		pk3-->
+		<div class="product-card">
+            <div class="product-image-box">
+                <img src="https://petdanphuong.com.vn/wp-content/uploads/2021/12/co-kho-huu-co-organic-meadow-hay.jpg" alt = "">
+                <div class="product-buttons">
+                    <button class="btn-info" onclick="openProduct('Cỏ khô', '35,000 đ', 'https://petdanphuong.com.vn/wp-content/uploads/2021/12/co-kho-huu-co-organic-meadow-hay.jpg', 'dành cho thỏ.')">
+                        Xem thông tin
+                    </button>
+                    <button class="btn-cart" onclick="addToCart('Cỏ khô', '35,000 đ')">
+    					<i class="fas fa-cart-plus"></i> Thêm vào giỏ
+						</button>
+                </div>
+            </div>
+            <div class="product-info">
+                <div class="product-name">Cỏ khô</div>
+                <div class="product-price">35,000 đ</div>
+            </div>
+        </div>
+<!--		pk4-->
+        <div class="product-card">
+            <div class="product-image-box">
+                <img src="https://mew.vn/wp-content/uploads/2022/01/thuc-an-hamster-tong-hop-1.jpeg" alt = "">
+                <div class="product-buttons">
+                    <button class="btn-info" onclick="openProduct('Hạt ngủ cốc tổng hợp', '80,000 đ', 'https://mew.vn/wp-content/uploads/2022/01/thuc-an-hamster-tong-hop-1.jpeg', 'dành cho hamster.')">
+                        Xem thông tin
+                    </button>
+                    <button class="btn-cart" onclick="addToCart('Hạt ngủ cốc tổng hợp', '80,000 đ')">
+    					<i class="fas fa-cart-plus"></i> Thêm vào giỏ
+						</button>
+                </div>
+            </div>
+            <div class="product-info">
+                <div class="product-name">Hạt ngủ cốc tổng hợp</div>
+                <div class="product-price">80,000 đ</div>
+            </div>
+        </div>
+<!--		pk5-->
+		<div class="product-card">
+            <div class="product-image-box">
+                <img src="https://img.lazcdn.com/g/p/8e785f091b25b8a2fb55dadb657096ef.png_720x720q80.png" alt = "">
+                <div class="product-buttons">
+                    <button class="btn-info" onclick="openProduct('Hạt khô', '40,000 đ', 'https://img.lazcdn.com/g/p/8e785f091b25b8a2fb55dadb657096ef.png_720x720q80.png', 'dành cho nhím.')">
+                        Xem thông tin
+                    </button>
+                    <button class="btn-cart" onclick="addToCart('Hạt khô', '40,000 đ')">
+    					<i class="fas fa-cart-plus"></i> Thêm vào giỏ
+						</button>
+                </div>
+            </div>
+            <div class="product-info">
+                <div class="product-name">Hạt khô</div>
+                <div class="product-price">40,000 đ</div>
+            </div>
+        </div>
+<!--		pk6-->
+		<div class="product-card">
+            <div class="product-image-box">
+                <img src="https://sieupet.com/sites/default/files/12557002229_745046451.jpg" alt = "">
+                <div class="product-buttons">
+                    <button class="btn-info" onclick="openProduct('Vòng cổ', '20,000 đ', 'https://sieupet.com/sites/default/files/12557002229_745046451.jpg', 'vòng cổ dành cho thú cưng, với nhiều size khác nhau.')">
+                        Xem thông tin
+                    </button>
+                    <button class="btn-cart" onclick="addToCart('Vòng cổ', '20,000 đ')">
+    					<i class="fas fa-cart-plus"></i> Thêm vào giỏ
+						</button>
+                </div>
+            </div>
+            <div class="product-info">
+                <div class="product-name">Vòng cổ</div>
+                <div class="product-price">20,000 đ</div>
+            </div>
+        </div>
+<!--		pk7-->
+		<div class="product-card">
+            <div class="product-image-box">
+                <img src="https://down-vn.img.susercontent.com/file/vn-11134207-7r98o-lzss66n9c9ql9a" alt = "">
+                <div class="product-buttons">
+                    <button class="btn-info" onclick="openProduct('Vòng wheel', '165,000 đ', 'https://down-vn.img.susercontent.com/file/vn-11134207-7r98o-lzss66n9c9ql9a', 'dành cho hamster, nhím.')">
+                        Xem thông tin
+                    </button>
+                    <button class="btn-cart" onclick="addToCart('Vòng wheel', '165,000 đ')">
+    					<i class="fas fa-cart-plus"></i> Thêm vào giỏ
+						</button>
+                </div>
+            </div>
+            <div class="product-info">
+                <div class="product-name">Vòng wheel</div>
+                <div class="product-price">165,000 đ</div>
+            </div>
+        </div>
+<!--		pk8-->
+		<div class="product-card">
+            <div class="product-image-box">
+                <img src="https://www.vietpet.net/wp-content/uploads/2019/07/bong-do-choi-cho-cho-chuckit-ultra-rubber-ball.jpg" alt = "">
+                <div class="product-buttons">
+                    <button class="btn-info" onclick="openProduct('Bóng cao su', '95,000 đ', 'https://www.vietpet.net/wp-content/uploads/2019/07/bong-do-choi-cho-cho-chuckit-ultra-rubber-ball.jpg', 'dành cho chó.')">
+                        Xem thông tin
+                    </button>
+                   <button class="btn-cart" onclick="addToCart('Bóng cao su', '95,000 đ')">
+    					<i class="fas fa-cart-plus"></i> Thêm vào giỏ
+						</button>
+                </div>
+            </div>
+            <div class="product-info">
+                <div class="product-name">Bóng cao su</div>
+                <div class="product-price">95,000 đ</div>
+            </div>
+        </div>
+<!--		pk9-->
+		<div class="product-card">
+            <div class="product-image-box">
+                <img src="https://www.petmart.vn/wp-content/uploads/2016/09/bong-do-choi-cho-cho-meo-co-chuong-nhua-bobo-1010-size-s.jpg" alt = "">
+                <div class="product-buttons">
+                    <button class="btn-info" onclick="openProduct('Bóng chuông', '45,000 đ', 'https://www.petmart.vn/wp-content/uploads/2016/09/bong-do-choi-cho-cho-meo-co-chuong-nhua-bobo-1010-size-s.jpg', 'dành cho mèo.')">
+                        Xem thông tin
+                    </button>
+                    <button class="btn-cart" onclick="addToCart('Bóng chuông', '45,000 đ')">
+    					<i class="fas fa-cart-plus"></i> Thêm vào giỏ
+						</button>
+                </div>
+            </div>
+            <div class="product-info">
+                <div class="product-name">Bóng chuông</div>
+                <div class="product-price">45,000 đ</div>
+            </div>
+        </div>
+<!--		pk10-->
+		<div class="product-card">
+            <div class="product-image-box">
+                <img src="https://www.petmart.vn/wp-content/uploads/2019/06/khay-ve-sinh-cho-cho-thanh-cao-iris-trt6501.jpg" alt = "">
+                <div class="product-buttons">
+                    <button class="btn-info" onclick="openProduct('Khay cát vệ sinh', '125,000 đ', 'https://www.petmart.vn/wp-content/uploads/2019/06/khay-ve-sinh-cho-cho-thanh-cao-iris-trt6501.jpg', 'dành cho mèo và chó.')">
+                        Xem thông tin
+                    </button>
+                    <button class="btn-cart" onclick="addToCart('Khay cát vệ sinh', '125,000 đ')">
+    					<i class="fas fa-cart-plus"></i> Thêm vào giỏ
+						</button>
+                </div>
+            </div>
+            <div class="product-info">
+                <div class="product-name">Khay cát vệ sinh</div>
+                <div class="product-price">125,000 đ</div>
+            </div>
+        </div>
+		</div>
+		
+</div>
+<!--	dịch vụ-->
+    <div id="dich-vu" class="tab-content">
+		 <h2 style="color: #da70d6;text-align: center;">Các dịch vụ khác ở ATRI</h2>
+		<p>Vệ sinh thú cưng bao gồm các dịch vụ tắm, gội, sấy khô. dịch vụ bao gồm nhiều combo khác nhau có thể tham khảo ở cửa hàng.</p>
+		<p>Dịch vụ làm đẹp cho thú cưng bao gồm cắt, tỉa, nhuộm.</p>
+		<p>Phục hồi lông, tắm trắng.</p>
+		<p>Dịch vụ trông coi thú cưng theo thời hạn : cửa hàng sẽ nhận trông coi thú cưng, ở ATRI tối đa 15 ngày kể từ ngày gửi.</p>
+		<p>Dịch vụ huấn luyện thú cưng tại cửa nhà hoặc cửa hàng.</p>
+		<p>Khám tổng quát khám sức khỏe định kì, tiêm phòng.</p>
+	</div>
+<!--giỏ hàng-->
+	<div id="gio-hang" class="tab-content">
+    <h2 style="color: #da70d6; text-align: center;">GIỎ HÀNG CỦA BẠN</h2>
+    <div id="cart-empty-msg" style="text-align: center; margin-top: 50px;">
+        <p>Giỏ hàng đang trống. Hãy chọn cho mình một người bạn mới nhé!</p>
+        <button onclick="showTab('thu-cung')" class="btn-cart" style="padding: 10px 20px;">Xem thú cưng</button>
+    </div>
+
+    <div id="cart-table-container" style="display: none; max-width: 800px; margin: 0 auto;">
+        <table style="width: 100%; border-collapse: collapse; background: #1a1a1a; border-radius: 10px; overflow: hidden;">
+            <thead>
+                <tr style="background: #252525; color: #da70d6;">
+                    <th style="padding: 15px; text-align: left;">Sản phẩm</th>
+                    <th style="padding: 15px;">Giá</th>
+                    <th style="padding: 15px;">Xóa</th>
+                </tr>
+            </thead>
+            <tbody id="cart-items-list">
+                </tbody>
+        </table>
+        
+        <div style="text-align: right; margin-top: 20px; font-size: 20px; font-weight: bold;">
+            Tổng cộng: <span id="cart-total" style="color: #ff4500;">0 đ</span>
+        </div>
+        
+        <button class="btn-cart" style="width: 100%; margin-top: 20px; padding: 15px; font-size: 18px;" onclick="checkout()">
+            TIẾN HÀNH THANH TOÁN
+        </button>
+    </div>
+</div>
+	
+<div id="productModal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+        <div class="modal-body">
+            <div class="modal-left">
+                <img id="modalImg" src="#" alt="Hình ảnh lớn">
+            </div>
+            <div class="modal-right">
+                <h2 id="modalName" style="color: #ffb6c1;"></h2>
+                <p id="modalPrice" style="color: #ff4500; font-weight: bold; font-size: 20px;"></p>
+                <div class="modal-description">
+                    <h4 style="color: #da70d6;">Thông tin chi tiết:</h4>
+                    <p id="modalDetail"></p>
+                </div>
+                <button class="btn-cart" style="width: 100%; margin-top: 20px; padding: 15px;">
+                    <i class="fas fa-cart-plus"></i> THÊM VÀO GIỎ HÀNG
+                </button>
+            </div>
+        </div>
+    </div>
+</div>	
+	
+<!--	chân trang-->
+	<footer class="footer-contact">
+    <div class="footer-line"></div> <div class="footer-content">
+        <p>Kết nối với ATRÍ PET qua các nền tảng:</p>
+        <div class="social-links">
+            <a href="https://www.facebook.com/nht.0210" target="_blank" class="fb">
+                <i class="fab fa-facebook-f"></i> Facebook
+            </a>
+            <a href="https://zalo.me/0347101706" target="_blank" class="zl">
+                <i class="fas fa-comment-dots"></i> Zalo
+            </a>
+            <a href="https://t.me/htri02" target="_blank" class="tg">
+                <i class="fab fa-telegram-plane"></i> Telegram
+            </a>
+        </div>
+        <p style="font-size: 12px; color: #666; margin-top: 20px;">
+            &copy; 2026 ATRÍ PET 
+        </p>
+    </div>
+</footer>	
+    <script>
+        function showTab(tabId) {
+            // 1. Ẩn tất cả nội dung
+            var contents = document.getElementsByClassName('tab-content');
+            for (var i = 0; i < contents.length; i++) {
+                contents[i].style.display = 'none';
+            }
+
+            // 2. Xóa trạng thái active của menu
+            var links = document.querySelectorAll('.navbar a');
+            links.forEach(link => link.classList.remove('active'));
+
+            // 3. Hiển thị tab được chọn
+            document.getElementById(tabId).style.display = 'block';
+
+            // 4. Thêm class active vào nút vừa bấm
+            document.getElementById('link-' + tabId).classList.add('active');
+            
+            // Cuộn lên đầu trang cho mượt
+            window.scrollTo(0, 0);
+        }
+		function openProduct(name, price, imgUrl, detail) {
+    document.getElementById('modalName').innerText = name;
+    document.getElementById('modalPrice').innerText = price;
+    document.getElementById('modalImg').src = imgUrl;
+	document.getElementById('modalDetail').innerText = detail;
+    document.getElementById('productModal').style.display = "block";
+			document.querySelector('.modal-description').scrollTop = 0;
+}
+
+function closeModal() {
+    document.getElementById('productModal').style.display = "none";
+}
+
+// Đóng khi bấm ra ngoài vùng Modal
+window.onclick = function(event) {
+    var modal = document.getElementById('productModal');
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+let cart = []; // Mảng chứa danh sách sản phẩm trong giỏ
+
+// 1. Hàm thêm vào giỏ
+function addToCart(name, price) {
+    // Chuyển giá từ chữ "400,000 đ" sang số 400000 để tính toán
+    let numericPrice = parseInt(price.replace(/[^0-9]/g, ""));
+    
+    cart.push({ name: name, price: numericPrice, originalPrice: price });
+    
+    updateCartUI();
+    alert("Đã thêm " + name + " vào giỏ hàng!");
+}
+
+// 2. Cập nhật giao diện giỏ hàng
+function updateCartUI() {
+    // Cập nhật số lượng trên icon giỏ hàng
+    document.getElementById('cart-count').innerText = cart.length;
+    
+    let list = document.getElementById('cart-items-list');
+    let emptyMsg = document.getElementById('cart-empty-msg');
+    let tableContainer = document.getElementById('cart-table-container');
+    let totalSpan = document.getElementById('cart-total');
+    
+    if (cart.length === 0) {
+        emptyMsg.style.display = "block";
+        tableContainer.style.display = "none";
+    } else {
+        emptyMsg.style.display = "none";
+        tableContainer.style.display = "block";
+        
+        list.innerHTML = ""; // Xóa danh sách cũ để vẽ lại
+        let total = 0;
+        
+        cart.forEach((item, index) => {
+            total += item.price;
+            list.innerHTML += `
+                <tr style="border-bottom: 1px solid #333;">
+                    <td style="padding: 15px; color: #ffb6c1;">${item.name}</td>
+                    <td style="padding: 15px; text-align: center;">${item.originalPrice}</td>
+                    <td style="padding: 15px; text-align: center;">
+                        <button onclick="removeFromCart(${index})" style="background: none; border: none; color: #ff0055; cursor: pointer;">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `;
+        });
+        totalSpan.innerText = total.toLocaleString('vi-VN') + " đ";
+    }
+}
+
+// 3. Xóa sản phẩm
+function removeFromCart(index) {
+    cart.splice(index, 1);
+    updateCartUI();
+}
+
+// 4. Thanh toán (Ghi chú: Đây là bản demo đơn giản)
+function checkout() {
+    let total = document.getElementById('cart-total').innerText;
+    alert("Cảm ơn bạn! Đơn hàng trị giá " + total + " của bạn đã thanh toán thành công.");
+    cart = []; // Xóa giỏ hàng sau khi thanh toán
+    updateCartUI();
+    showTab('thu-cung');
+}
+		function filterProducts() {
+    // Lấy giá trị từ ô chọn (ép về chữ thường để so sánh cho chuẩn)
+    let selectedCategory = document.getElementById('category-filter').value.toLowerCase();
+    let products = document.querySelectorAll('.product-card');
+    let found = false;
+
+    products.forEach(product => {
+        // Lấy nhãn data-category của sản phẩm
+        let productCat = product.getAttribute('data-category');
+        
+        if (selectedCategory === "tat-ca" || selectedCategory === productCat) {
+            product.style.display = "block";
+            found = true;
+        } else {
+            product.style.display = "none";
+        }
+    });
+
+    // Nếu không tìm thấy sản phẩm nào, có thể hiện thông báo
+    if (!found) {
+        console.log("Không tìm thấy thú cưng thuộc danh mục này.");
+    }
+}
+    </script>
+	
+	
+
+</body>
+</html>
